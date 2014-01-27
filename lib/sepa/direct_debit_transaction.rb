@@ -176,7 +176,8 @@ module Sepa
       dbtr_acct_id      = Nokogiri::XML::Node.new "Id", document
       dbtr_acct_id_iban = Nokogiri::XML::Node.new "IBAN", document
       dbtr_acct_id_iban.content = debtor_iban
-      dbtr_acct << dbtr_acct_id << dbtr_acct_id_iban
+      dbtr_acct_id << dbtr_acct_id_iban
+      dbtr_acct << dbtr_acct_id
       xml << dbtr_acct
 
       rmt_inf       = Nokogiri::XML::Node.new "RmtInf", document

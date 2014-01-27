@@ -173,8 +173,10 @@ module Sepa
       svl_lvl_cd.content    = Sepa::PaymentInfo::SERVICELEVEL_CODE
       lcl_instrm_cd.content = local_instrument_code
       seq_tp.content        = sequence_type
-      pmt_tp_inf << svc_lvl << svl_lvl_cd
-      pmt_tp_inf << lcl_instrm << lcl_instrm_cd
+      svc_lvl << svl_lvl_cd
+      pmt_tp_inf << svc_lvl
+      lcl_instrm << lcl_instrm_cd
+      pmt_tp_inf << lcl_instrm
       pmt_tp_inf << seq_tp
       xml << pmt_tp_inf
 
@@ -192,14 +194,16 @@ module Sepa
       cdtr_acct_id      = Nokogiri::XML::Node.new "Id", document
       cdtr_acct_id_iban = Nokogiri::XML::Node.new "IBAN", document
       cdtr_acct_id_iban.content = creditor_account_iban
-      cdtr_acct << cdtr_acct_id << cdtr_acct_id_iban
+      cdtr_acct_id << cdtr_acct_id_iban
+      cdtr_acct << cdtr_acct_id
       xml << cdtr_acct
 
       cdtr_agt                  = Nokogiri::XML::Node.new "CdtrAgt", document
       cdtr_agt_fin_instn_id     = Nokogiri::XML::Node.new "FinInstnId", document
       cdtr_agt_fin_instn_id_bic = Nokogiri::XML::Node.new "BIC", document
       cdtr_agt_fin_instn_id_bic.content = creditor_agent_bic
-      cdtr_agt << cdtr_agt_fin_instn_id << cdtr_agt_fin_instn_id_bic
+      cdtr_agt_fin_instn_id << cdtr_agt_fin_instn_id_bic
+      cdtr_agt << cdtr_agt_fin_instn_id
       xml << cdtr_agt
 
       node = Nokogiri::XML::Node.new "ChrgBr", document
@@ -218,8 +222,11 @@ module Sepa
         cdtr_schme_id_id_prvt_id_othr << cdtr_schme_id_id_prvt_id_othr_id
       end
       cdtr_schme_id_id_prvt_id_othr_schme_nm_prtry.content = Sepa::PaymentInfo::PROPRIETARY_NAME
-      cdtr_schme_id_id_prvt_id_othr << cdtr_schme_id_id_prvt_id_othr_schme_nm << cdtr_schme_id_id_prvt_id_othr_schme_nm_prtry
-      cdtr_schme_id << cdtr_schme_id_id << cdtr_schme_id_id_prvt_id << cdtr_schme_id_id_prvt_id_othr
+      cdtr_schme_id_id_prvt_id_othr_schme_nm << cdtr_schme_id_id_prvt_id_othr_schme_nm_prtry
+      cdtr_schme_id_id_prvt_id_othr << cdtr_schme_id_id_prvt_id_othr_schme_nm
+      cdtr_schme_id_id_prvt_id << cdtr_schme_id_id_prvt_id_othr
+      cdtr_schme_id_id << cdtr_schme_id_id_prvt_id
+      cdtr_schme_id << cdtr_schme_id_id
       xml << cdtr_schme_id
 
       @transactions.each_with_index { |transaction| xml << transaction.to_xml(document) }
