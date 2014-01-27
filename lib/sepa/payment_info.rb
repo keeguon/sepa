@@ -74,7 +74,8 @@ module Sepa
 
     def requested_collection_date
       reqd_colltn_dt = Time.new
-      @requested_collection_date = reqd_colltn_dt.strftime("%Y-%m-%d\T%H:%M:%S")
+      #@requested_collection_date = reqd_colltn_dt.strftime("%Y-%m-%d\T%H:%M:%S")
+      @requested_collection_date = reqd_colltn_dt.strftime("%Y-%m-%d")
       @requested_collection_date
     end
 
