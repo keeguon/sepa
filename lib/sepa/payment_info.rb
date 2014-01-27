@@ -213,7 +213,7 @@ module Sepa
       cdtr_schme_id_id_prvt_id_othr_schme_nm       = Nokogiri::XML::Node.new "SchmeNm", document
       cdtr_schme_id_id_prvt_id_othr_schme_nm_prtry = Nokogiri::XML::Node.new "Prtry", document
       unless creditor_scheme_identification.empty?
-        cdtr_schme_id_id_prvt_id_othr_id = Nokogiri::XML::Node.new "Id"
+        cdtr_schme_id_id_prvt_id_othr_id = Nokogiri::XML::Node.new "Id", document
         cdtr_schme_id_id_prvt_id_othr_id.content = creditor_scheme_identification
         cdtr_schme_id_id_prvt_id_othr << cdtr_schme_id_id_prvt_id_othr_id
       end
