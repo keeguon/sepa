@@ -47,7 +47,7 @@ module Sepa
 
       # Add all payment blocks
       @payment_infos.each do |payment_info|
-        message << payment_info.to_xml
+        message << payment_info.to_xml(doc)
       end
 
       message.xpath('.//GrpHdr//NbOfTxs').first.content = group_header.number_of_transactions
