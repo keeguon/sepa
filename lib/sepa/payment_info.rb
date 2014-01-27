@@ -152,7 +152,7 @@ module Sepa
       node.content = payment_information_identification
       xml << node
       node = Nokogiri::XML::Node.new "PmtMtd", document
-      node.content = self::PAYMENT_METHOD
+      node.content = Sepa::PaymentInfo::PAYMENT_METHOD
       xml << node
       node = Nokogiri::XML::Node.new "BtchBookg", document
       node.content = batchbooking
@@ -170,7 +170,7 @@ module Sepa
       lcl_instrm            = Nokogiri::XML::Node.new "LclInstrm", document
       lcl_instrm_cd         = Nokogiri::XML::Node.new "Cd", document
       seq_tp                = Nokogiri::XML::Node.new "SeqTp", document
-      svl_lvl_cd.content    = SERVICELEVEL_CODE
+      svl_lvl_cd.content    = Sepa::PaymentInfo::SERVICELEVEL_CODE
       lcl_instrm_cd.content = local_instrument_code
       seq_tp.content        = sequence_type
       pmt_tp_inf << svc_lvl << svl_lvl_cd
@@ -203,7 +203,7 @@ module Sepa
       xml << cdtr_agt
 
       node = Nokogiri::XML::Node.new "ChrgBr", document
-      node.content = CHARGE_BEARER
+      node.content = Sepa::PaymentInfo::CHARGE_BEARER
       xml << node
 
       cdtr_schme_id                                = Nokogiri::XML::Node.new "CdtrSchmeId", document
@@ -217,7 +217,7 @@ module Sepa
         cdtr_schme_id_id_prvt_id_othr_id.content = creditor_scheme_identification
         cdtr_schme_id_id_prvt_id_othr << cdtr_schme_id_id_prvt_id_othr_id
       end
-      cdtr_schme_id_id_prvt_id_othr_schme_nm_prtry.content = PROPRIETARY_NAME
+      cdtr_schme_id_id_prvt_id_othr_schme_nm_prtry.content = Sepa::PaymentInfo::PROPRIETARY_NAME
       cdtr_schme_id_id_prvt_id_othr << cdtr_schme_id_id_prvt_id_othr_schme_nm << cdtr_schme_id_id_prvt_id_othr_schme_nm_prtry
       cdtr_schme_id << cdtr_schme_id_id << cdtr_schme_id_id_prvt_id << cdtr_schme_id_id_prvt_id_othr
       xml << cdtr_schme_id

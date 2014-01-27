@@ -141,11 +141,11 @@ module Sepa
       xml << pmt_id
 
       node = Nokogiri::Node::XML.new "InstdAmt", document
-      node['Ccy'] = CURRENCY_CODE
+      node['Ccy'] = Sepa::DirectDebitTransaction::CURRENCY_CODE
       node.content = instructed_amount
       xml << node
       node = Nokogiri::Node::XML.new "ChrgBr", document
-      node.content = CHARGE_BEARER
+      node.content = Sepa::DirectDebitTransaction::CHARGE_BEARER
       xml << node
 
       drct_dbt_tx                           = Nokogiri::XML::Node.new "DrctDbtTx", document
