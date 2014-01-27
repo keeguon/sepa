@@ -162,9 +162,13 @@ module Sepa
       drct_dbt_tx << drct_dbt_tx_mndt_rltd_inf
       xml << drct_dbt_tx
 
-      dbtr_agt                  = Nokogiri::XML::Node.new "", document
-      dbtr_agt_fin_instn_id     = Nokogiri::XML::Node.new "", document
-      dbtr_agt_fin_instn_id_bic = Nokogiri::XML::Node.new "", document
+      dbtr_agt                  = Nokogiri::XML::Node.new "DbtrAgt", document
+      dbtr_agt_fin_instn_id     = Nokogiri::XML::Node.new "FinInstnId", document
+      dbtr_agt_fin_instn_id_bic = Nokogiri::XML::Node.new "BIC", document
+      dbtr_agt_fin_instn_id_bic.content = debtor_agent_bic
+      dbtr_agt_fin_instn_id << dbtr_agt_fin_instn_id_bic
+      dbtr_agt_fin_instn_id << dbtr_agt
+      xml << dbtr_agt
 
       dbtr    = Nokogiri::XML::Node.new "Dbtr", document
       dbtr_nm = Nokogiri::XML::Node.new "Nm", document
