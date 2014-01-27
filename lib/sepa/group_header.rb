@@ -55,7 +55,7 @@ module Sepa
         throw Sepa::Exception.new "Invalid initiating party name (max. 70)."
       end
 
-      @initiating_party_name
+      @initiating_party_name = nm
     end
 
     def to_xml(document)
