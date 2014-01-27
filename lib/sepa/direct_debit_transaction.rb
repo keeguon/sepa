@@ -135,7 +135,7 @@ module Sepa
       pmt_id_instr_id      = Nokogiri::XML::Node.new "InstrId", document
       pmt_id_end_to_end_id = Nokogiri::XML::Node.new "EndToEndId", document
       pmt_id_instr_id.content = instruction_identification
-      pmt_id_end_to_end_id = end_to_end_identification
+      pmt_id_end_to_end_id.content = end_to_end_identification
       pmt_id << pmt_id_instr_id
       pmt_id << pmt_id_end_to_end_id
       xml << pmt_id
