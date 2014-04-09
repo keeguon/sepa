@@ -143,7 +143,7 @@ module Sepa
 
       @transactions << transaction
 
-      @number_of_transactions++
+      @number_of_transactions += 1
       @control_sum += transaction.instructed_amount
     end
 
@@ -236,7 +236,6 @@ module Sepa
 
       @transactions.each_with_index { |transaction| xml << transaction.to_xml(document) }
 
-      p number_of_transactions
       xml.xpath('.//NbOfTxs').first.content = number_of_transactions
       xml.xpath('.//CtrlSum').first.content = control_sum
 
