@@ -1,5 +1,6 @@
 module Sepa
   class PaymentInfo
+    CURRENCY_CODE     = 'EUR'
     PAYMENT_METHOD    = 'DD'
     SERVICELEVEL_CODE = 'SEPA'
     CHARGE_BEARER     = 'SLEV'
@@ -197,6 +198,9 @@ module Sepa
       cdtr_acct_id_iban.content = creditor_account_iban
       cdtr_acct_id << cdtr_acct_id_iban
       cdtr_acct << cdtr_acct_id
+      cdtr_acct_ccy = Nokogiri::XML::Node.new "Ccy", document
+      cdtr_acct_ccy.content = Sepa::PaymentInfo::CURRENCY_CODE
+      cdtr_acct << cdtr_acct_ccy
       xml << cdtr_acct
 
       cdtr_agt                  = Nokogiri::XML::Node.new "CdtrAgt", document
@@ -232,6 +236,7 @@ module Sepa
 
       @transactions.each_with_index { |transaction| xml << transaction.to_xml(document) }
 
+      p number_of_transactions
       xml.xpath('.//NbOfTxs').first.content = number_of_transactions
       xml.xpath('.//CtrlSum').first.content = control_sum
 
