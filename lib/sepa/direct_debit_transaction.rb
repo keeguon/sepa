@@ -167,7 +167,7 @@ module Sepa
       dbtr_agt_fin_instn_id_bic = Nokogiri::XML::Node.new "BIC", document
       dbtr_agt_fin_instn_id_bic.content = debtor_agent_bic
       dbtr_agt_fin_instn_id << dbtr_agt_fin_instn_id_bic
-      dbtr_agt_fin_instn_id << dbtr_agt
+      dbtr_agt << dbtr_agt_fin_instn_id
       xml << dbtr_agt
 
       dbtr    = Nokogiri::XML::Node.new "Dbtr", document
