@@ -197,7 +197,7 @@ module Sepa
     end
 
     def add_transaction(transaction)
-      if transaction.class != Sepa::DirectDebitTransaction
+      unless [Sepa::CreditTransferTransaction, Sepa::DirectDebitTransaction].include?(transaction.class)
         throw Sepa::Exception.new "Invalid 'transaction' parameter, must be of class 'Sepa::DirectDebitTransaction'."
       end
 
