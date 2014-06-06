@@ -50,7 +50,7 @@ module Sepa
       doc.root = node
 
       # Initialize the actual message en add the group header
-      message = Nokogiri::XML::Node.new "CstmrDrctDbtInitn", doc
+      message = (@mode == 'SDD' ? Nokogiri::XML::Node.new("CstmrDrctDbtInitn", doc) : Nokogiri::XML::Node.new("CstmrCdtTrfInitn", doc))
       message << group_header.to_xml(doc)
 
       # Add all payment blocks
