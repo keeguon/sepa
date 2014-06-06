@@ -1,14 +1,22 @@
 module Sepa
   class Message
-    def initialize(message_definition = '')
-      @message_definition = message_definition
+    def initialize(mode = nil)
+      if ["SCT", "SDD"].include?(mode)
+        @mode = mode
+      else
+        throw Sepa::Exception.new "Invalid 'mode' parameter, must be either 'SCT' or 'SDD'."
+      end
+
+      # Define message definition depending on the mode
+      @message_definition = (mode == "SCT" ? 'urn:iso:std:iso:20022:tech:xsd:pain.001.001.03' : 'urn:iso:std:iso:20022:tech:xsd:pain.008.001.02')
+
       @group_header = nil
       @payment_infos = []
     end
 
     def group_header
       @group_header = @group_header.nil? ? Sepa::GroupHeader.new : @group_header
-      
+
       @group_header
     end
 

@@ -1,12 +1,17 @@
 module Sepa
   class PaymentInfo
     CURRENCY_CODE     = 'EUR'
-    PAYMENT_METHOD    = 'DD'
     SERVICELEVEL_CODE = 'SEPA'
     CHARGE_BEARER     = 'SLEV'
     PROPRIETARY_NAME  = 'SEPA'
 
-    def initialize
+    def initialize(payment_method = nil)
+      if ["DD", "TRF"].include?(payment_method)
+        @payment_method = payment_method
+      else
+        throw Sepa::Exception.new "Invalid 'payment_method' parameter, must be either 'DD' or 'TRF'."
+      end
+
       @payment_information_identification = ''
       @batchbooking = true
       @number_of_transactions = 0
@@ -14,9 +19,13 @@ module Sepa
       @local_instrument_code = 'CORE'
       @sequence_type = 'FRST'
       @requested_collection_date = nil
+      @requested_execution_date = nil
       @creditor_name = ''
       @creditor_account_iban = ''
-      @creditor_agent_iban = ''
+      @creditor_agent_bic = ''
+      @debtor_name = ''
+      @debtor_account_iban = ''
+      @debtor_agent_bic = ''
       @creditor_scheme_identification = ''
       @transactions = []
     end
@@ -84,6 +93,17 @@ module Sepa
       @requested_collection_date = reqd_colltn_dt
     end
 
+    def requested_execution_date
+      reqd_exctn_dt = Time.new
+      #@requested_collection_date = reqd_colltn_dt.strftime("%Y-%m-%d\T%H:%M:%S")
+      @requested_execution_date = reqd_exctn_dt.strftime("%Y-%m-%d")
+      @requested_execution_date
+    end
+
+    def requested_execution_date=(reqd_exctn_dt)
+      @requested_execution_date = reqd_exctn_dt
+    end
+
     def creditor_name
       @creditor_name
     end
@@ -124,6 +144,46 @@ module Sepa
       @creditor_agent_bic = bic
     end
 
+    def debtor_name
+      @debtor_name
+    end
+
+    def debtor_name=(dbtr)
+      if dbtr.length == 0 || dbtr.length > 70
+        throw Sepa::Exception.new "Invalid initiating party name (max. 70)."
+      end
+
+      @debtor_name = dbtr
+    end
+
+    def debtor_account_iban
+      @debtor_account_iban
+    end
+
+    def debtor_account_iban=(iban)
+      iban = iban.strip.gsub ' ', ''
+
+      if (iban =~ /^[a-zA-Z]{2}[0-9]{2}[a-zA-Z0-9]{4}[0-9]{7}([a-zA-Z0-9]?){0,16}\z/i).nil?
+        throw Sepa::Exception.new "Invalid debtor IBAN."
+      end
+
+      @debtor_account_iban = iban
+    end
+
+    def debtor_agent_bic
+      @debtor_agent_bic
+    end
+
+    def debtor_agent_bic=(bic)
+      bic = bic.strip.gsub ' ', ''
+
+      if (bic =~ /^[0-9a-z]{4}[a-z]{2}[0-9a-z]{2}([0-9a-z]{3})?\z/i).nil?
+        throw Sepa::Exception.new "Invalid debtor BIC."
+      end
+
+      @debtor_agent_bic = bic
+    end
+
     def creditor_scheme_identification
       @creditor_scheme_identification
     end
@@ -154,7 +214,7 @@ module Sepa
       node.content = payment_information_identification
       xml << node
       node = Nokogiri::XML::Node.new "PmtMtd", document
-      node.content = Sepa::PaymentInfo::PAYMENT_METHOD
+      node.content = @payment_method
       xml << node
       node = Nokogiri::XML::Node.new "BtchBookg", document
       node.content = batchbooking
@@ -179,60 +239,99 @@ module Sepa
       pmt_tp_inf << svc_lvl
       lcl_instrm << lcl_instrm_cd
       pmt_tp_inf << lcl_instrm
-      pmt_tp_inf << seq_tp
+
+      if @payment_method == "DD"
+        seq_tp = Nokogiri::XML::Node.new "SeqTp", document
+        seq_tp.content = sequence_type
+        pmt_tp_inf << seq_tp
+      end
+
       xml << pmt_tp_inf
 
-      node = Nokogiri::XML::Node.new "ReqdColltnDt", document
-      node.content = requested_collection_date
-      xml << node
+      if @payment_method == "DD"
+        node = Nokogiri::XML::Node.new "ReqdColltnDt", document
+        node.content = requested_collection_date
+        xml << node
 
-      cdtr            = Nokogiri::XML::Node.new "Cdtr", document
-      cdtr_nm         = Nokogiri::XML::Node.new "Nm", document
-      cdtr_nm.content = creditor_name
-      cdtr << cdtr_nm
-      xml << cdtr
+        cdtr            = Nokogiri::XML::Node.new "Cdtr", document
+        cdtr_nm         = Nokogiri::XML::Node.new "Nm", document
+        cdtr_nm.content = creditor_name
+        cdtr << cdtr_nm
+        xml << cdtr
 
-      cdtr_acct         = Nokogiri::XML::Node.new "CdtrAcct", document
-      cdtr_acct_id      = Nokogiri::XML::Node.new "Id", document
-      cdtr_acct_id_iban = Nokogiri::XML::Node.new "IBAN", document
-      cdtr_acct_id_iban.content = creditor_account_iban
-      cdtr_acct_id << cdtr_acct_id_iban
-      cdtr_acct << cdtr_acct_id
-      cdtr_acct_ccy = Nokogiri::XML::Node.new "Ccy", document
-      cdtr_acct_ccy.content = Sepa::PaymentInfo::CURRENCY_CODE
-      cdtr_acct << cdtr_acct_ccy
-      xml << cdtr_acct
+        cdtr_acct         = Nokogiri::XML::Node.new "CdtrAcct", document
+        cdtr_acct_id      = Nokogiri::XML::Node.new "Id", document
+        cdtr_acct_id_iban = Nokogiri::XML::Node.new "IBAN", document
+        cdtr_acct_id_iban.content = creditor_account_iban
+        cdtr_acct_id << cdtr_acct_id_iban
+        cdtr_acct << cdtr_acct_id
+        cdtr_acct_ccy = Nokogiri::XML::Node.new "Ccy", document
+        cdtr_acct_ccy.content = Sepa::PaymentInfo::CURRENCY_CODE
+        cdtr_acct << cdtr_acct_ccy
+        xml << cdtr_acct
 
-      cdtr_agt                  = Nokogiri::XML::Node.new "CdtrAgt", document
-      cdtr_agt_fin_instn_id     = Nokogiri::XML::Node.new "FinInstnId", document
-      cdtr_agt_fin_instn_id_bic = Nokogiri::XML::Node.new "BIC", document
-      cdtr_agt_fin_instn_id_bic.content = creditor_agent_bic
-      cdtr_agt_fin_instn_id << cdtr_agt_fin_instn_id_bic
-      cdtr_agt << cdtr_agt_fin_instn_id
-      xml << cdtr_agt
+        cdtr_agt                  = Nokogiri::XML::Node.new "CdtrAgt", document
+        cdtr_agt_fin_instn_id     = Nokogiri::XML::Node.new "FinInstnId", document
+        cdtr_agt_fin_instn_id_bic = Nokogiri::XML::Node.new "BIC", document
+        cdtr_agt_fin_instn_id_bic.content = creditor_agent_bic
+        cdtr_agt_fin_instn_id << cdtr_agt_fin_instn_id_bic
+        cdtr_agt << cdtr_agt_fin_instn_id
+        xml << cdtr_agt
+      else
+        node = Nokogiri::XML::Node.new "ReqdExctnDt", document
+        node.content = requested_execution_date
+        xml << node
+
+        dbtr            = Nokogiri::XML::Node.new "Dbtr", document
+        dbtr_nm         = Nokogiri::XML::Node.new "Nm", document
+        dbtr_nm.content = debtor_name
+        dbtr << dbtr_nm
+        xml << dbtr
+
+        dbtr_acct         = Nokogiri::XML::Node.new "DbtrAcct", document
+        dbtr_acct_id      = Nokogiri::XML::Node.new "Id", document
+        dbtr_acct_id_iban = Nokogiri::XML::Node.new "IBAN", document
+        dbtr_acct_id_iban.content = debtor_account_iban
+        dbtr_acct_id << dbtr_acct_id_iban
+        dbtr_acct << dbtr_acct_id
+        dbtr_acct_ccy = Nokogiri::XML::Node.new "Ccy", document
+        dbtr_acct_ccy.content = Sepa::PaymentInfo::CURRENCY_CODE
+        dbtr_acct << dbtr_acct_ccy
+        xml << dbtr_acct
+
+        dbtr_agt                  = Nokogiri::XML::Node.new "DbtrAgt", document
+        dbtr_agt_fin_instn_id     = Nokogiri::XML::Node.new "FinInstnId", document
+        dbtr_agt_fin_instn_id_bic = Nokogiri::XML::Node.new "BIC", document
+        dbtr_agt_fin_instn_id_bic.content = debtor_agent_bic
+        dbtr_agt_fin_instn_id << dbtr_agt_fin_instn_id_bic
+        dbtr_agt << dbtr_agt_fin_instn_id
+        xml << dbtr_agt
+      end
 
       node = Nokogiri::XML::Node.new "ChrgBr", document
       node.content = Sepa::PaymentInfo::CHARGE_BEARER
       xml << node
 
-      cdtr_schme_id                                = Nokogiri::XML::Node.new "CdtrSchmeId", document
-      cdtr_schme_id_id                             = Nokogiri::XML::Node.new "Id", document
-      cdtr_schme_id_id_prvt_id                     = Nokogiri::XML::Node.new "PrvtId", document
-      cdtr_schme_id_id_prvt_id_othr                = Nokogiri::XML::Node.new "Othr", document
-      cdtr_schme_id_id_prvt_id_othr_schme_nm       = Nokogiri::XML::Node.new "SchmeNm", document
-      cdtr_schme_id_id_prvt_id_othr_schme_nm_prtry = Nokogiri::XML::Node.new "Prtry", document
-      unless creditor_scheme_identification.empty?
-        cdtr_schme_id_id_prvt_id_othr_id = Nokogiri::XML::Node.new "Id", document
-        cdtr_schme_id_id_prvt_id_othr_id.content = creditor_scheme_identification
-        cdtr_schme_id_id_prvt_id_othr << cdtr_schme_id_id_prvt_id_othr_id
+      if @payment_method == "DD"
+        cdtr_schme_id                                = Nokogiri::XML::Node.new "CdtrSchmeId", document
+        cdtr_schme_id_id                             = Nokogiri::XML::Node.new "Id", document
+        cdtr_schme_id_id_prvt_id                     = Nokogiri::XML::Node.new "PrvtId", document
+        cdtr_schme_id_id_prvt_id_othr                = Nokogiri::XML::Node.new "Othr", document
+        cdtr_schme_id_id_prvt_id_othr_schme_nm       = Nokogiri::XML::Node.new "SchmeNm", document
+        cdtr_schme_id_id_prvt_id_othr_schme_nm_prtry = Nokogiri::XML::Node.new "Prtry", document
+        unless creditor_scheme_identification.empty?
+          cdtr_schme_id_id_prvt_id_othr_id = Nokogiri::XML::Node.new "Id", document
+          cdtr_schme_id_id_prvt_id_othr_id.content = creditor_scheme_identification
+          cdtr_schme_id_id_prvt_id_othr << cdtr_schme_id_id_prvt_id_othr_id
+        end
+        cdtr_schme_id_id_prvt_id_othr_schme_nm_prtry.content = Sepa::PaymentInfo::PROPRIETARY_NAME
+        cdtr_schme_id_id_prvt_id_othr_schme_nm << cdtr_schme_id_id_prvt_id_othr_schme_nm_prtry
+        cdtr_schme_id_id_prvt_id_othr << cdtr_schme_id_id_prvt_id_othr_schme_nm
+        cdtr_schme_id_id_prvt_id << cdtr_schme_id_id_prvt_id_othr
+        cdtr_schme_id_id << cdtr_schme_id_id_prvt_id
+        cdtr_schme_id << cdtr_schme_id_id
+        xml << cdtr_schme_id
       end
-      cdtr_schme_id_id_prvt_id_othr_schme_nm_prtry.content = Sepa::PaymentInfo::PROPRIETARY_NAME
-      cdtr_schme_id_id_prvt_id_othr_schme_nm << cdtr_schme_id_id_prvt_id_othr_schme_nm_prtry
-      cdtr_schme_id_id_prvt_id_othr << cdtr_schme_id_id_prvt_id_othr_schme_nm
-      cdtr_schme_id_id_prvt_id << cdtr_schme_id_id_prvt_id_othr
-      cdtr_schme_id_id << cdtr_schme_id_id_prvt_id
-      cdtr_schme_id << cdtr_schme_id_id
-      xml << cdtr_schme_id
 
       @transactions.each_with_index { |transaction| xml << transaction.to_xml(document) }
 

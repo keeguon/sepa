@@ -14,7 +14,7 @@ module Sepa
 
     def message_identification=(msg_id)
       if (msg_id =~ /^([A-Za-z0-9]|[\+|\?|\/|\-|:|\(|\)|\.|,|'| ]){1,35}\z/).nil?
-        throw Sepa::Exception.new "MsgId empty, contains invalid characters or too long (max. 35)." 
+        throw Sepa::Exception.new "MsgId empty, contains invalid characters or too long (max. 35)."
       end
 
       @message_identification = msg_id
@@ -60,7 +60,7 @@ module Sepa
 
     def to_xml(document)
       xml = Nokogiri::XML::Node.new "GrpHdr", document
-      
+
       node = Nokogiri::XML::Node.new "MsgId", document
       node.content = message_identification
       xml << node
