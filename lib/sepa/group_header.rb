@@ -89,7 +89,7 @@ module Sepa
       initg_pty << initg_pty_nm
       initg_pty_id                   = Nokogiri::XML::Node.new "Id", document
       initg_pty_id_org_id            = Nokogiri::XML::Node.new "OrgId", document
-      initg_pty_id_org_id_bic_or_bei = Nokogiri::XML::Node.new "BICOrBei", document
+      initg_pty_id_org_id_bic_or_bei = Nokogiri::XML::Node.new "BICOrBEI", document
       initg_pty_id_org_id_bic_or_bei.content = initiating_party_bei
       initg_pty_id_org_id << initg_pty_id_org_id_bic_or_bei
       initg_pty_id << initg_pty_id_org_id
