@@ -97,7 +97,7 @@ module Sepa
     end
 
     def to_xml(document)
-      xml = Nokogiri::XML::Node.new "DrctDbtTxInf", document
+      xml = Nokogiri::XML::Node.new "CdtTrfTxInf", document
 
       pmt_id               = Nokogiri::XML::Node.new "PmtId", document
       pmt_id_instr_id      = Nokogiri::XML::Node.new "InstrId", document
