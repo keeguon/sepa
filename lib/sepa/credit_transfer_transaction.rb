@@ -108,9 +108,11 @@ module Sepa
       pmt_id << pmt_id_end_to_end_id
       xml << pmt_id
 
-      node = Nokogiri::XML::Node.new "InstdAmt", document
-      node['Ccy'] = Sepa::DirectDebitTransaction::CURRENCY_CODE
-      node.content = instructed_amount
+      node    = Nokogiri::XML::Node.new "Amt", document
+      subnode = Nokogiri::XML::Node.new "InstdAmt", document
+      subnode['Ccy'] = Sepa::DirectDebitTransaction::CURRENCY_CODE
+      subnode.content = instructed_amount
+      node << subnode
       xml << node
 
       cdtr_agt                  = Nokogiri::XML::Node.new "CdtrAgt", document

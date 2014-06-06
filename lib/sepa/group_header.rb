@@ -6,6 +6,7 @@ module Sepa
       @number_of_transactions = 0
       @control_sum = 0.00
       @initiating_party_name = ''
+      @initiating_party_bei = ''
     end
 
     def message_identification
@@ -58,6 +59,14 @@ module Sepa
       @initiating_party_name = nm
     end
 
+    def initiating_party_bei
+      @initiating_party_bei
+    end
+
+    def initiating_party_bei=(bei)
+      @initiating_party_bei = bei
+    end
+
     def to_xml(document)
       xml = Nokogiri::XML::Node.new "GrpHdr", document
 
@@ -74,11 +83,18 @@ module Sepa
       node.content = control_sum
       xml << node
 
-      node    = Nokogiri::XML::Node.new "InitgPty", document
-      subnode = Nokogiri::XML::Node.new "Nm", document
-      subnode.content = initiating_party_name
-      node << subnode
-      xml  << node
+      initg_pty                      = Nokogiri::XML::Node.new "InitgPty", document
+      initg_pty_nm                   = Nokogiri::XML::Node.new "Nm", document
+      initg_pty_id                   = Nokogiri::XML::Node.new "Id", document
+      initg_pty_id_org_id            = Nokogiri::XML::Node.new "OrgId", document
+      initg_pty_id_org_id_bic_or_bei = Nokogiri::XML::Node.new "BICOrBei", document
+      initg_pty_nm.content = initiating_party_name
+      initg_pty_id_org_id_bic_or_bei = initiating_party_bei
+      initg_pty << initg_pty_nm
+      initg_pty_id_org_id << initg_pty_id_org_id_bic_or_bei
+      initg_pty_id << initg_pty_id_org_id
+      initg_pty << initg_pty_id
+      xml << initg_pty
 
       xml
     end

@@ -17,6 +17,7 @@ module Sepa
       @number_of_transactions = 0
       @control_sum = 0.00
       @local_instrument_code = 'CORE'
+      @category_purpose_code = 'SUPP'
       @sequence_type = 'FRST'
       @requested_collection_date = nil
       @requested_execution_date = nil
@@ -68,6 +69,18 @@ module Sepa
       end
 
       @local_instrument_code = cd
+    end
+
+    def category_purpose_code
+      @category_purpose_code
+    end
+
+    def category_purpose_code=(cd)
+      if (cd =~ /^(SUPP|SALA)\z/).nil?
+        throw Sepa::Exception.new "Only 'SUPP' or 'SALA' are allowed."
+      end
+
+      @category_purpose_code = cd
     end
 
     def sequence_type
@@ -229,21 +242,26 @@ module Sepa
       pmt_tp_inf            = Nokogiri::XML::Node.new "PmtTpInf", document
       svc_lvl               = Nokogiri::XML::Node.new "SvcLvl", document
       svl_lvl_cd            = Nokogiri::XML::Node.new "Cd", document
-      lcl_instrm            = Nokogiri::XML::Node.new "LclInstrm", document
-      lcl_instrm_cd         = Nokogiri::XML::Node.new "Cd", document
-      seq_tp                = Nokogiri::XML::Node.new "SeqTp", document
       svl_lvl_cd.content    = Sepa::PaymentInfo::SERVICELEVEL_CODE
-      lcl_instrm_cd.content = local_instrument_code
-      seq_tp.content        = sequence_type
       svc_lvl << svl_lvl_cd
       pmt_tp_inf << svc_lvl
-      lcl_instrm << lcl_instrm_cd
-      pmt_tp_inf << lcl_instrm
 
       if @payment_method == "DD"
+        lcl_instrm            = Nokogiri::XML::Node.new "LclInstrm", document
+        lcl_instrm_cd         = Nokogiri::XML::Node.new "Cd", document
+        lcl_instrm_cd.content = local_instrument_code
+        lcl_instrm << lcl_instrm_cd
+        pmt_tp_inf << lcl_instrm
+
         seq_tp = Nokogiri::XML::Node.new "SeqTp", document
         seq_tp.content = sequence_type
         pmt_tp_inf << seq_tp
+      else
+        ctgy_purp            = Nokogiri::XML::Node.new "CtgyPurp", document
+        ctgy_purp_cd         = Nokogiri::XML::Node.new "Cd", document
+        ctgy_purp_cd.content = category_purpose_code
+        ctgy_purp << ctgy_purp_cd
+        pmt_tp_inf << ctgy_purp
       end
 
       xml << pmt_tp_inf
