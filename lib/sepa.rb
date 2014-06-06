@@ -3,6 +3,7 @@ $:.unshift path unless $:.include?(path)
 
 require 'nokogiri'
 require 'sepa/exception'
+require 'sepa/credit_transfer_transaction'
 require 'sepa/direct_debit_transaction'
 require 'sepa/payment_info'
 require 'sepa/group_header'
