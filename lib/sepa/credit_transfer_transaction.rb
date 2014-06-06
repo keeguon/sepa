@@ -123,7 +123,7 @@ module Sepa
       cdtr_agt << cdtr_agt_fin_instn_id
       xml << cdtr_agt
 
-      cdtr    = Nokogiri::XML::Node.new "cdtr", document
+      cdtr    = Nokogiri::XML::Node.new "Cdtr", document
       cdtr_nm = Nokogiri::XML::Node.new "Nm", document
       cdtr_nm.content = creditor_name
       cdtr << cdtr_nm
