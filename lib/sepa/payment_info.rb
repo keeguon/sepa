@@ -22,9 +22,11 @@ module Sepa
       @requested_collection_date = nil
       @requested_execution_date = nil
       @creditor_name = ''
+      @creditor_country = ''
       @creditor_account_iban = ''
       @creditor_agent_bic = ''
       @debtor_name = ''
+      @debtor_country = ''
       @debtor_account_iban = ''
       @debtor_agent_bic = ''
       @creditor_scheme_identification = ''
@@ -121,12 +123,24 @@ module Sepa
       @creditor_name
     end
 
-    def creditor_name=(cdtr)
-      if cdtr.length == 0 || cdtr.length > 70
+    def creditor_name=(cdtr_name)
+      if cdtr_name.length == 0 || cdtr_name.length > 70
         throw Sepa::Exception.new "Invalid initiating party name (max. 70)."
       end
 
-      @creditor_name = cdtr
+      @creditor_name = cdtr_name
+    end
+
+    def creditor_country
+      @creditor_country
+    end
+
+    def creditor_country=(cdtr_ctry)
+      if cdtr_ctry.length == 0 || cdtr_ctry.length > 2
+        throw Sepa::Exception.new "Invalid initiating party country (wrong ISO code)."
+      end
+
+      @creditor_country = cdtr_ctry
     end
 
     def creditor_account_iban
@@ -161,12 +175,24 @@ module Sepa
       @debtor_name
     end
 
-    def debtor_name=(dbtr)
-      if dbtr.length == 0 || dbtr.length > 70
+    def debtor_name=(dbtr_name)
+      if dbtr_name.length == 0 || dbtr_name.length > 70
         throw Sepa::Exception.new "Invalid initiating party name (max. 70)."
       end
 
-      @debtor_name = dbtr
+      @debtor_name = dbtr_name
+    end
+
+    def debtor_country
+      @debtor_country
+    end
+
+    def debtor_country=(dbtr_ctry)
+      if dbtr_ctry.length == 0 || dbtr_ctry.length > 2
+        throw Sepa::Exception.new "Invalid initiating party country (wrong ISO code)."
+      end
+
+      @debtor_country = dbtr_ctry
     end
 
     def debtor_account_iban
@@ -275,6 +301,11 @@ module Sepa
         cdtr_nm         = Nokogiri::XML::Node.new "Nm", document
         cdtr_nm.content = creditor_name
         cdtr << cdtr_nm
+        cdtr_pstl_adr = Nokogiri::XML::Node.new "PstlAdr", document
+        cdtr_pstl_adr_ctry = Nokogiri::XML::Node.new "Ctry", document
+        cdtr_pstl_adr_ctry.content = creditor_country
+        cdtr_pstl_adr << cdtr_pstl_adr_ctry
+        cdtr << cdtr_pstl_adr
         xml << cdtr
 
         cdtr_acct         = Nokogiri::XML::Node.new "CdtrAcct", document
@@ -304,6 +335,11 @@ module Sepa
         dbtr_nm         = Nokogiri::XML::Node.new "Nm", document
         dbtr_nm.content = debtor_name
         dbtr << dbtr_nm
+        dbtr_pstl_adr = Nokogiri::XML::Node.new "PstlAdr", document
+        dbtr_pstl_adr_ctry = Nokogiri::XML::Node.new "Ctry", document
+        dbtr_pstl_adr_ctry.content = debtor_country
+        dbtr_pstl_adr << dbtr_pstl_adr_ctry
+        dbtr << dbtr_pstl_adr
         xml << dbtr
 
         dbtr_acct         = Nokogiri::XML::Node.new "DbtrAcct", document
