@@ -100,7 +100,7 @@ module Sepa
     def requested_collection_date
       reqd_colltn_dt = @requested_collection_date || Time.new
       #@requested_collection_date = reqd_colltn_dt.strftime("%Y-%m-%d\T%H:%M:%S")
-      @requested_collection_date = reqd_colltn_dt.strftime("%Y-%m-%d")
+      @requested_collection_date = (reqd_colltn_dt.is_a?(Time) ? reqd_colltn_dt.strftime("%Y-%m-%d") : reqd_colltn_dt)
       @requested_collection_date
     end
 
@@ -111,7 +111,7 @@ module Sepa
     def requested_execution_date
       reqd_exctn_dt = @requested_execution_date || Time.new
       #@requested_collection_date = reqd_colltn_dt.strftime("%Y-%m-%d\T%H:%M:%S")
-      @requested_execution_date = reqd_exctn_dt.strftime("%Y-%m-%d")
+      @requested_execution_date = (reqd_exctn_dt.is_a?(Time) ? reqd_exctn_dt.strftime("%Y-%m-%d") : reqd_exctn_dt)
       @requested_execution_date
     end
 
