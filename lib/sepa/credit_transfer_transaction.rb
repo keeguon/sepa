@@ -117,9 +117,17 @@ module Sepa
 
       cdtr_agt                  = Nokogiri::XML::Node.new "CdtrAgt", document
       cdtr_agt_fin_instn_id     = Nokogiri::XML::Node.new "FinInstnId", document
-      cdtr_agt_fin_instn_id_bic = Nokogiri::XML::Node.new "BIC", document
-      cdtr_agt_fin_instn_id_bic.content = creditor_agent_bic
-      cdtr_agt_fin_instn_id << cdtr_agt_fin_instn_id_bic
+      if creditor_agent_bic.nil?
+        cdtr_agt_fin_instn_id_other    = Nokogiri::XML::Node.new "Othr", document
+        cdtr_agt_fin_instn_id_other_id = Nokogiri::XML::Node.new "Id", document
+        cdtr_agt_fin_instn_id_other_id.content = "NOTPROVIDED"
+        cdtr_agt_fin_instn_id_other << cdtr_agt_fin_instn_id_other_id
+        cdtr_agt_fin_instn_id << cdtr_agt_fin_instn_id_other
+      else
+        cdtr_agt_fin_instn_id_bic = Nokogiri::XML::Node.new "BIC", document
+        cdtr_agt_fin_instn_id_bic.content = creditor_agent_bic
+        cdtr_agt_fin_instn_id << cdtr_agt_fin_instn_id_bic
+      end
       cdtr_agt << cdtr_agt_fin_instn_id
       xml << cdtr_agt
 

@@ -39,7 +39,7 @@ module Sepa
 
     def payment_information_identification=(pmt_inf_id)
       if (pmt_inf_id =~ /^([A-Za-z0-9]|[\+|\?|\/|\-|:|\(|\)|\.|,|'| ]){1,35}\z/).nil?
-        throw Sepa::Exception.new "PmtInfId empty, contains invalid characters or too long (max. 35)." 
+        throw Sepa::Exception.new "PmtInfId empty, contains invalid characters or too long (max. 35)."
       end
 
       @payment_information_identification = pmt_inf_id
