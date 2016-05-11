@@ -14,7 +14,7 @@ module Sepa
     end
 
     def message_identification=(msg_id)
-      if (msg_id =~ /^([A-Za-z0-9]|[\+|\?|\/|\-|:|\(|\)|\.|,|'| ]){1,35}\z/).nil?
+      if (msg_id =~ /\A([A-Za-z0-9]|[\+|\?|\/|\-|:|\(|\)|\.|,|'| ]){1,35}\z/).nil?
         throw Sepa::Exception.new "MsgId empty, contains invalid characters or too long (max. 35)."
       end
 
@@ -32,7 +32,7 @@ module Sepa
     end
 
     def number_of_transactions=(nb_of_txs)
-      if (nb_of_txs.to_s =~ /^[0-9]{1,15}\z/).nil?
+      if (nb_of_txs.to_s =~ /\A[0-9]{1,15}\z/).nil?
         throw Sepa::Exception.new "Invalid NbOfTxs value (max. 15 digits)."
       end
 
