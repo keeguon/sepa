@@ -17,7 +17,7 @@ module Sepa
     end
 
     def instruction_identification=(instr_id)
-      if (instr_id =~ /^([\-A-Za-z0-9\+\/\?:\(\)\., ]){0,35}\z/).nil?
+      if (instr_id =~ /\A([\-A-Za-z0-9\+\/\?:\(\)\., ]){0,35}\z/).nil?
         throw Sepa::Exception.new "Invalid InstructionIdentification (max. 35)."
       end
 
@@ -29,7 +29,7 @@ module Sepa
     end
 
     def end_to_end_identification=(end_to_end_id)
-      if (end_to_end_id =~ /^([\-A-Za-z0-9\+\/\?:\(\)\., ]){0,35}\z/).nil?
+      if (end_to_end_id =~ /\A([\-A-Za-z0-9\+\/\?:\(\)\., ]){0,35}\z/).nil?
         throw Sepa::Exception.new "Invalid EndToEndIdentification (max. 35)."
       end
 
@@ -51,7 +51,7 @@ module Sepa
     def creditor_agent_bic=(bic)
       bic = bic.strip.gsub ' ', ''
 
-      if (bic =~ /^[0-9a-z]{4}[a-z]{2}[0-9a-z]{2}([0-9a-z]{3})?\z/i).nil?
+      if (bic =~ /\A[0-9a-z]{4}[a-z]{2}[0-9a-z]{2}([0-9a-z]{3})?\z/i).nil?
         throw Sepa::Exception.new "Invalid creditor BIC."
       end
 
@@ -77,7 +77,7 @@ module Sepa
     def creditor_iban=(iban)
       iban = iban.strip.gsub ' ', ''
 
-      if (iban =~ /^[a-zA-Z]{2}[0-9]{2}[a-zA-Z0-9]{4}[0-9]{7}([a-zA-Z0-9]?){0,16}\z/i).nil?
+      if (iban =~ /\A[a-zA-Z]{2}[0-9]{2}[a-zA-Z0-9]{4}[0-9]{7}([a-zA-Z0-9]?){0,16}\z/i).nil?
         throw Sepa::Exception.new "Invalid creditor IBAN."
       end
 
@@ -89,7 +89,7 @@ module Sepa
     end
 
     def remittance_information=(ustrd)
-      if (ustrd =~ /^([A-Za-z0-9]|[\+|\?|\/|\-|:|\(|\)|\.|,|'| ]){0,140}\z/).nil?
+      if (ustrd =~ /\A([A-Za-z0-9]|[\+|\?|\/|\-|:|\(|\)|\.|,|'| ]){0,140}\z/).nil?
         throw Sepa::Exception.new "RmtInf contains invalid chars or is too long (max. 140)."
       end
 

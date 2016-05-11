@@ -38,7 +38,7 @@ module Sepa
     end
 
     def payment_information_identification=(pmt_inf_id)
-      if (pmt_inf_id =~ /^([A-Za-z0-9]|[\+|\?|\/|\-|:|\(|\)|\.|,|'| ]){1,35}\z/).nil?
+      if (pmt_inf_id =~ /\A([A-Za-z0-9]|[\+|\?|\/|\-|:|\(|\)|\.|,|'| ]){1,35}\z/).nil?
         throw Sepa::Exception.new "PmtInfId empty, contains invalid characters or too long (max. 35)."
       end
 
@@ -66,7 +66,7 @@ module Sepa
     end
 
     def local_instrument_code=(cd)
-      if (cd =~ /^(B2B|COR1|CORE)\z/).nil?
+      if (cd =~ /\A(B2B|COR1|CORE)\z/).nil?
         throw Sepa::Exception.new "Only 'CORE', 'COR1', or 'B2B' are allowed."
       end
 
@@ -78,7 +78,7 @@ module Sepa
     end
 
     def category_purpose_code=(cd)
-      if (cd =~ /^(SUPP|SALA)\z/).nil?
+      if (cd =~ /\A(SUPP|SALA)\z/).nil?
         throw Sepa::Exception.new "Only 'SUPP' or 'SALA' are allowed."
       end
 
@@ -90,7 +90,7 @@ module Sepa
     end
 
     def sequence_type=(seq_type)
-      if (seq_type =~ /^(FNAL|FRST|OOFF|RCUR)\z/).nil?
+      if (seq_type =~ /\A(FNAL|FRST|OOFF|RCUR)\z/).nil?
         throw Sepa::Exception.new "Only 'FNAL', 'FRST', 'OOFF', or 'RCUR' are allowed."
       end
 
@@ -150,7 +150,7 @@ module Sepa
     def creditor_account_iban=(iban)
       iban = iban.strip.gsub ' ', ''
 
-      if (iban =~ /^[a-zA-Z]{2}[0-9]{2}[a-zA-Z0-9]{4}[0-9]{7}([a-zA-Z0-9]?){0,16}\z/i).nil?
+      if (iban =~ /\A[a-zA-Z]{2}[0-9]{2}[a-zA-Z0-9]{4}[0-9]{7}([a-zA-Z0-9]?){0,16}\z/i).nil?
         throw Sepa::Exception.new "Invalid creditor IBAN."
       end
 
@@ -164,7 +164,7 @@ module Sepa
     def creditor_agent_bic=(bic)
       bic = bic.strip.gsub ' ', ''
 
-      if (bic =~ /^[0-9a-z]{4}[a-z]{2}[0-9a-z]{2}([0-9a-z]{3})?\z/i).nil?
+      if (bic =~ /\A[0-9a-z]{4}[a-z]{2}[0-9a-z]{2}([0-9a-z]{3})?\z/i).nil?
         throw Sepa::Exception.new "Invalid creditor BIC."
       end
 
@@ -202,7 +202,7 @@ module Sepa
     def debtor_account_iban=(iban)
       iban = iban.strip.gsub ' ', ''
 
-      if (iban =~ /^[a-zA-Z]{2}[0-9]{2}[a-zA-Z0-9]{4}[0-9]{7}([a-zA-Z0-9]?){0,16}\z/i).nil?
+      if (iban =~ /\A[a-zA-Z]{2}[0-9]{2}[a-zA-Z0-9]{4}[0-9]{7}([a-zA-Z0-9]?){0,16}\z/i).nil?
         throw Sepa::Exception.new "Invalid debtor IBAN."
       end
 
@@ -216,7 +216,7 @@ module Sepa
     def debtor_agent_bic=(bic)
       bic = bic.strip.gsub ' ', ''
 
-      if (bic =~ /^[0-9a-z]{4}[a-z]{2}[0-9a-z]{2}([0-9a-z]{3})?\z/i).nil?
+      if (bic =~ /\A[0-9a-z]{4}[a-z]{2}[0-9a-z]{2}([0-9a-z]{3})?\z/i).nil?
         throw Sepa::Exception.new "Invalid debtor BIC."
       end
 
