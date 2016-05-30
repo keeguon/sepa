@@ -115,6 +115,8 @@ module Sepa
       node << subnode
       xml << node
 
+      cdtr_agt              = Nokogiri::XML::Node.new "CdtrAgt", document
+      cdtr_agt_fin_instn_id = Nokogiri::XML::Node.new "FinInstnId", document
       if creditor_agent_bic.nil?
         cdtr_agt_fin_instn_id_other    = Nokogiri::XML::Node.new "Othr", document
         cdtr_agt_fin_instn_id_other_id = Nokogiri::XML::Node.new "Id", document
