@@ -9,8 +9,8 @@ Gem::Specification.new do |s|
   s.platform     = Gem::Platform::RUBY
   s.authors      = ["Félix Bellanger"]
   s.email        = ["felix.bellanger@gmail.com"]
-  s.description  = "This gem allows you to generate XML documents for SEPA Direct Debit (SDD)."
-  s.summary      = "SEPA Direct Debit (SDD) XML Generator."
+  s.description  = "This gem allows you to generate XML documents for SEPA Direct Debit (SDD) and SEPA Credit Transfer (SCT)."
+  s.summary      = "SEPA Direct Debit (SDD) / SEPA Credit Transfer (SCT) XML Generator."
   s.homepage     = "https://github.com/Keeguon/sepa"
   s.license      = "MIT"
 
